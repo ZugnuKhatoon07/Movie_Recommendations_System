@@ -1,0 +1,196 @@
+[
+    {
+        "label": "streamlit",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "streamlit",
+        "description": "streamlit",
+        "detail": "streamlit",
+        "documentation": {}
+    },
+    {
+        "label": "pickle",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pickle",
+        "description": "pickle",
+        "detail": "pickle",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests",
+        "description": "requests",
+        "detail": "requests",
+        "documentation": {}
+    },
+    {
+        "label": "time",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "time",
+        "description": "time",
+        "detail": "time",
+        "documentation": {}
+    },
+    {
+        "label": "TfidfVectorizer",
+        "importPath": "sklearn.feature_extraction.text",
+        "description": "sklearn.feature_extraction.text",
+        "isExtraImport": true,
+        "detail": "sklearn.feature_extraction.text",
+        "documentation": {}
+    },
+    {
+        "label": "TfidfVectorizer",
+        "importPath": "sklearn.feature_extraction.text",
+        "description": "sklearn.feature_extraction.text",
+        "isExtraImport": true,
+        "detail": "sklearn.feature_extraction.text",
+        "documentation": {}
+    },
+    {
+        "label": "cosine_similarity",
+        "importPath": "sklearn.metrics.pairwise",
+        "description": "sklearn.metrics.pairwise",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics.pairwise",
+        "documentation": {}
+    },
+    {
+        "label": "cosine_similarity",
+        "importPath": "sklearn.metrics.pairwise",
+        "description": "sklearn.metrics.pairwise",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics.pairwise",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_poster",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def fetch_poster(movie_id):\n    try:\n        url = f\"https://api.themoviedb.org/3/movie/{movie_id}?api_key=bf7752c471b2eb9b27442d3d80a077fc&language=en-US\"\n        response = requests.get(url)\n        data = response.json()\n        if response.status_code != 200:\n            return \"https://via.placeholder.com/500x750.png?text=API+Error\"\n        poster_path = data.get(\"poster_path\")\n        if poster_path:\n            return f\"https://image.tmdb.org/t/p/w500{poster_path}\"",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "create_similarity",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def create_similarity(data):\n    tfidf = TfidfVectorizer(max_features=3000)\n    vectors = tfidf.fit_transform(data['tags']).toarray()\n    similarity_matrix = cosine_similarity(vectors)\n    return similarity_matrix\nsimilarity = create_similarity(movies)\n# ---------------- RECOMMEND FUNCTION ---------------- #\ndef recommend(movie):\n    movie_index = movies[movies['title'] == movie].index[0]\n    distances = similarity[movie_index]",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "recommend",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def recommend(movie):\n    movie_index = movies[movies['title'] == movie].index[0]\n    distances = similarity[movie_index]\n    movies_list = sorted(\n        list(enumerate(distances)),\n        reverse=True,\n        key=lambda x: x[1]\n    )[1:6]   # 👈 skip selected movie\n    recommended_movies = []\n    recommended_posters = []",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "API_KEY",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "API_KEY = \"bf7752c471b2eb9b27442d3d80a077fc\"\n@st.cache_data\ndef fetch_poster(movie_id):\n    try:\n        url = f\"https://api.themoviedb.org/3/movie/{movie_id}?api_key=bf7752c471b2eb9b27442d3d80a077fc&language=en-US\"\n        response = requests.get(url)\n        data = response.json()\n        if response.status_code != 200:\n            return \"https://via.placeholder.com/500x750.png?text=API+Error\"\n        poster_path = data.get(\"poster_path\")",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "movies_dict",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "movies_dict = pickle.load(open('movies.pkl', 'rb'))\nmovies = pd.DataFrame(movies_dict)\n# ---------------- CREATE SIMILARITY (NO PKL NEEDED) ---------------- #\n@st.cache_data\ndef create_similarity(data):\n    tfidf = TfidfVectorizer(max_features=3000)\n    vectors = tfidf.fit_transform(data['tags']).toarray()\n    similarity_matrix = cosine_similarity(vectors)\n    return similarity_matrix\nsimilarity = create_similarity(movies)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "movies",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "movies = pd.DataFrame(movies_dict)\n# ---------------- CREATE SIMILARITY (NO PKL NEEDED) ---------------- #\n@st.cache_data\ndef create_similarity(data):\n    tfidf = TfidfVectorizer(max_features=3000)\n    vectors = tfidf.fit_transform(data['tags']).toarray()\n    similarity_matrix = cosine_similarity(vectors)\n    return similarity_matrix\nsimilarity = create_similarity(movies)\n# ---------------- RECOMMEND FUNCTION ---------------- #",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "similarity",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "similarity = create_similarity(movies)\n# ---------------- RECOMMEND FUNCTION ---------------- #\ndef recommend(movie):\n    movie_index = movies[movies['title'] == movie].index[0]\n    distances = similarity[movie_index]\n    movies_list = sorted(\n        list(enumerate(distances)),\n        reverse=True,\n        key=lambda x: x[1]\n    )[1:6]   # 👈 skip selected movie",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "selected_movie_name",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "selected_movie_name = st.selectbox(\n    \"Select a movie\",\n    movies['title'].values\n)\nif st.button(\"Recommend\"):\n    names, posters = recommend(selected_movie_name)\n    col1, col2, col3, col4, col5 = st.columns(5)\n    for idx, col in enumerate([col1, col2, col3, col4, col5]):\n        with col:\n            st.text(names[idx])",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "movies",
+        "kind": 5,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "movies = pickle.load(open('movies.pkl','rb'))\n# Convert to DataFrame\nmovies = pd.DataFrame(movies)\n# TF-IDF Vectorization\ntfidf = TfidfVectorizer(max_features=5000)\nvectors = tfidf.fit_transform(movies['tags']).toarray()\n# Cosine similarity\nsimilarity = cosine_similarity(vectors)\n# Save similarity file\npickle.dump(similarity, open('similarity.pkl', 'wb'))",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "movies",
+        "kind": 5,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "movies = pd.DataFrame(movies)\n# TF-IDF Vectorization\ntfidf = TfidfVectorizer(max_features=5000)\nvectors = tfidf.fit_transform(movies['tags']).toarray()\n# Cosine similarity\nsimilarity = cosine_similarity(vectors)\n# Save similarity file\npickle.dump(similarity, open('similarity.pkl', 'wb'))\nprint(\"Similarity file created successfully!\")",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "tfidf",
+        "kind": 5,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "tfidf = TfidfVectorizer(max_features=5000)\nvectors = tfidf.fit_transform(movies['tags']).toarray()\n# Cosine similarity\nsimilarity = cosine_similarity(vectors)\n# Save similarity file\npickle.dump(similarity, open('similarity.pkl', 'wb'))\nprint(\"Similarity file created successfully!\")",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "vectors",
+        "kind": 5,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "vectors = tfidf.fit_transform(movies['tags']).toarray()\n# Cosine similarity\nsimilarity = cosine_similarity(vectors)\n# Save similarity file\npickle.dump(similarity, open('similarity.pkl', 'wb'))\nprint(\"Similarity file created successfully!\")",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "similarity",
+        "kind": 5,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "similarity = cosine_similarity(vectors)\n# Save similarity file\npickle.dump(similarity, open('similarity.pkl', 'wb'))\nprint(\"Similarity file created successfully!\")",
+        "detail": "model",
+        "documentation": {}
+    }
+]
