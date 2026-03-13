@@ -196,6 +196,7 @@ import pickle
 import pandas as pd
 import requests
 import time
+import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -227,8 +228,12 @@ def fetch_poster(movie_id):
 
 
 # ---------------- LOAD DATA ---------------- #
+import model
+file_path = os.path.join(os.path.dirname(__file__), "movies.pkl")
 
-movies_dict = pickle.load(open('movies.pkl', 'rb'))
+with open(file_path, "rb") as f:
+    movies_dict = pickle.load(f)
+
 movies = pd.DataFrame(movies_dict)
 
 # ---------------- CREATE SIMILARITY ---------------- #
