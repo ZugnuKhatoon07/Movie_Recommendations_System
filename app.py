@@ -228,7 +228,7 @@ def fetch_poster(movie_id):
 
 
 # ---------------- LOAD DATA ---------------- #
-import model
+
 file_path = os.path.join(os.path.dirname(__file__), "movies.pkl")
 
 with open(file_path, "rb") as f:
