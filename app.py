@@ -92,6 +92,105 @@
 #             st.image(posters[idx])
 
 
+# import streamlit as st
+# import pickle
+# import pandas as pd
+# import requests
+# import time
+# from sklearn.feature_extraction.text import TfidfVectorizer
+# from sklearn.metrics.pairwise import cosine_similarity
+
+# # ---------------- FETCH POSTER ---------------- #
+
+# API_KEY = "bf7752c471b2eb9b27442d3d80a077fc"
+
+# @st.cache_data
+# def fetch_poster(movie_id):
+#     try:
+#         url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=bf7752c471b2eb9b27442d3d80a077fc&language=en-US"
+#         response = requests.get(url)
+#         data = response.json()
+
+#         if response.status_code != 200:
+#             return "https://via.placeholder.com/500x750.png?text=API+Error"
+
+#         poster_path = data.get("poster_path")
+
+#         if poster_path:
+#             return f"https://image.tmdb.org/t/p/w500{poster_path}"
+#         else:
+#             return "https://via.placeholder.com/500x750.png?text=No+Poster"
+
+#     except:
+#         return "https://via.placeholder.com/500x750.png?text=Error"
+
+# # ---------------- LOAD DATA ---------------- #
+
+# movies_dict = pickle.load(open('movies.pkl', 'rb'))
+# movies = pd.DataFrame(movies_dict)
+
+
+# # ---------------- CREATE SIMILARITY (NO PKL NEEDED) ---------------- #
+
+# @st.cache_data
+# def create_similarity(data):
+#     tfidf = TfidfVectorizer(max_features=3000)
+#     vectors = tfidf.fit_transform(data['tags']).toarray()
+#     similarity_matrix = cosine_similarity(vectors)
+#     return similarity_matrix
+
+# similarity = create_similarity(movies)
+
+
+# # ---------------- RECOMMEND FUNCTION ---------------- #
+
+# def recommend(movie):
+#     movie_index = movies[movies['title'] == movie].index[0]
+#     distances = similarity[movie_index]
+
+#     movies_list = sorted(
+#         list(enumerate(distances)),
+#         reverse=True,
+#         key=lambda x: x[1]
+#     )[1:6]   # 👈 skip selected movie
+
+#     recommended_movies = []
+#     recommended_posters = []
+
+#     for i in movies_list:
+#         movie_id = movies.iloc[i[0]].movie_id
+#         title = movies.iloc[i[0]].title
+
+#         poster = fetch_poster(movie_id)
+
+#         recommended_movies.append(title)
+#         recommended_posters.append(poster)
+
+#     return recommended_movies, recommended_posters
+
+
+# # ---------------- STREAMLIT UI ---------------- #
+
+# st.title("🎬 Movie Recommender System")
+
+# selected_movie_name = st.selectbox(
+#     "Select a movie",
+#     movies['title'].values
+# )
+
+# if st.button("Recommend"):
+
+#     names, posters = recommend(selected_movie_name)
+
+#     col1, col2, col3, col4, col5 = st.columns(5)
+
+#     for idx, col in enumerate([col1, col2, col3, col4, col5]):
+#         with col:
+#             st.text(names[idx])
+#             st.image(posters[idx])
+
+
+
 import streamlit as st
 import pickle
 import pandas as pd
@@ -100,37 +199,39 @@ import time
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# ---------------- FETCH POSTER ---------------- #
+# ---------------- API KEY ---------------- #
 
 API_KEY = "bf7752c471b2eb9b27442d3d80a077fc"
+
+# ---------------- FETCH POSTER ---------------- #
 
 @st.cache_data
 def fetch_poster(movie_id):
     try:
         url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=bf7752c471b2eb9b27442d3d80a077fc&language=en-US"
-        response = requests.get(url)
-        data = response.json()
+        response = requests.get(url, timeout=10)
 
         if response.status_code != 200:
-            return "https://via.placeholder.com/500x750.png?text=API+Error"
+            return "https://via.placeholder.com/300x450?text=Poster+Not+Found"
 
+        data = response.json()
         poster_path = data.get("poster_path")
 
         if poster_path:
-            return f"https://image.tmdb.org/t/p/w500{poster_path}"
+            return "https://image.tmdb.org/t/p/w500" + poster_path
         else:
-            return "https://via.placeholder.com/500x750.png?text=No+Poster"
+            return "https://via.placeholder.com/300x450?text=No+Poster"
 
     except:
-        return "https://via.placeholder.com/500x750.png?text=Error"
+        return "https://via.placeholder.com/300x450?text=Error"
+
 
 # ---------------- LOAD DATA ---------------- #
 
 movies_dict = pickle.load(open('movies.pkl', 'rb'))
 movies = pd.DataFrame(movies_dict)
 
-
-# ---------------- CREATE SIMILARITY (NO PKL NEEDED) ---------------- #
+# ---------------- CREATE SIMILARITY ---------------- #
 
 @st.cache_data
 def create_similarity(data):
@@ -140,7 +241,6 @@ def create_similarity(data):
     return similarity_matrix
 
 similarity = create_similarity(movies)
-
 
 # ---------------- RECOMMEND FUNCTION ---------------- #
 
@@ -152,7 +252,7 @@ def recommend(movie):
         list(enumerate(distances)),
         reverse=True,
         key=lambda x: x[1]
-    )[1:6]   # 👈 skip selected movie
+    )[1:6]
 
     recommended_movies = []
     recommended_posters = []
@@ -165,6 +265,8 @@ def recommend(movie):
 
         recommended_movies.append(title)
         recommended_posters.append(poster)
+
+        time.sleep(0.2)
 
     return recommended_movies, recommended_posters
 
@@ -184,7 +286,10 @@ if st.button("Recommend"):
 
     col1, col2, col3, col4, col5 = st.columns(5)
 
-    for idx, col in enumerate([col1, col2, col3, col4, col5]):
-        with col:
-            st.text(names[idx])
-            st.image(posters[idx])
+    cols = [col1, col2, col3, col4, col5]
+
+    for i in range(len(names)):
+        with cols[i]:
+            st.text(names[i])
+            st.image(posters[i], use_container_width=True)
+
