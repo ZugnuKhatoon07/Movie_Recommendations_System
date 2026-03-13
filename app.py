@@ -207,25 +207,18 @@ API_KEY = "bf7752c471b2eb9b27442d3d80a077fc"
 # ---------------- FETCH POSTER ---------------- #
 
 @st.cache_data
-def fetch_poster(movie_id):
-    try:
-        url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=bf7752c471b2eb9b27442d3d80a077fc&language=en-US"
-        response = requests.get(url, timeout=10)
+def create_similarity(data):
 
-        if response.status_code != 200:
-            return "https://via.placeholder.com/300x450?text=Poster+Not+Found"
+    tfidf = TfidfVectorizer(max_features=3000)
 
-        data = response.json()
-        poster_path = data.get("poster_path")
+    # tags को string में convert
+    data['tags'] = data['tags'].fillna('').astype(str)
 
-        if poster_path:
-            return "https://image.tmdb.org/t/p/w500" + poster_path
-        else:
-            return "https://via.placeholder.com/300x450?text=No+Poster"
+    vectors = tfidf.fit_transform(data['tags']).toarray()
 
-    except:
-        return "https://via.placeholder.com/300x450?text=Error"
+    similarity_matrix = cosine_similarity(vectors)
 
+    return similarity_matrix
 
 # ---------------- LOAD DATA ---------------- #
 
